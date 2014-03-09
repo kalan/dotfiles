@@ -1,0 +1,6 @@
+partial modifier_keys
+xkb_symbols "like_te" {
+  replace key <LCTL>  { [ Shift_L ] };
+  replace key <LFSH> { [ Control_L ] };
+  replace key <CAPS> { [ Shift_L ] };
+};

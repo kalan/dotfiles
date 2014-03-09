@@ -1,0 +1,52 @@
+# Use auto-indentation 
+set autoindent
+
+# Set characters treated as closing brackets
+set brackets ""')>]}"
+
+# Display cursor position in the status bar
+#set const
+
+# Use the blank line below the titlebar
+set morespace
+
+# Allow multibuffer
+set multibuffer
+ 
+# Don't wrap text at all 
+set nowrap 
+ 
+# Use smooth scrolling as the default 
+set smooth 
+
+# Soft line wrapping for easier viewing of long lines
+#set softwrap
+ 
+# Use this spelling checker instead of the internal one.  This option 
+# does not properly have a default value. 
+set speller "aspell -c" 
+ 
+# Use this tab size instead of the default; it must be greater than 0 
+set tabsize 2
+ 
+# Convert tabs to spaces
+set tabstospaces
+
+# Enable experimental general purpose undo
+#set undo
+
+# Treat punctuation as parts of words
+set wordbounds
+ 
+# Syntax highlighting includes
+include "~/.nanorc.d/nanorc.nanorc"
+include "~/.nanorc.d/c.nanorc"
+include "~/.nanorc.d/html.nanorc"
+include "~/.nanorc.d/tex.nanorc"
+include "~/.nanorc.d/patch.nanorc"
+include "~/.nanorc.d/man.nanorc"
+include "~/.nanorc.d/perl.nanorc"
+include "~/.nanorc.d/python.nanorc"
+include "~/.nanorc.d/sh.nanorc"
+include "~/.nanorc.d/css.nanorc"
+include "~/.nanorc.d/php.nanorc"
