@@ -1,0 +1,67 @@
+### Core
+apt-listbugs
+apt-listchanges
+git
+
+### Fonts
+fonts-cantarell
+fonts-inconsolata
+ttf-mscorefonts-installer
+
+### Gnome
+dconf-editor
+evince-gtk
+file-roller
+gnome-codec-install
+gnome-screensaver
+gnome-terminal
+gtk-redshift
+nautilus-dropbox
+nautilus-open-terminal
+unrar
+
+### Graphics
+eog
+imagemagick
+inkscape
+gimp
+
+### LaTeX
+cm-super
+latex-beamer
+latex-xcolor
+lmodern
+texlive
+texlive-fonts-extra
+texlive-humanities
+texlive-latex-extra
+texlive-math-extra
+texlive-science
+texlive-xetex
+tex-gyre
+
+### LibreOffice
+libreoffice
+libreoffice-gtk
+
+### Python
+gfortran
+hdf5-tools
+libblas-dev
+libfreetype6-dev
+libhdf5-dev
+libopenblas-base
+libpng12-dev
+libxml2-dev
+libxslt1-dev
+libzmq-dev
+python-dev
+python-virtualenv
+virtualenvwrapper
+
+### Torrents
+dtach
+rtorrent
+
+### Video
+vlc
