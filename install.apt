@@ -15,7 +15,6 @@ file-roller
 gnome-codec-install
 gnome-screensaver
 gnome-terminal
-gtk-redshift
 nautilus-dropbox
 nautilus-open-terminal
 unrar
@@ -25,6 +24,7 @@ eog
 imagemagick
 inkscape
 gimp
+redshift
 
 ### LaTeX
 cm-super
@@ -58,6 +58,10 @@ libzmq-dev
 python-dev
 python-virtualenv
 virtualenvwrapper
+
+### node.js
+nodejs
+npm
 
 ### Torrents
 dtach
