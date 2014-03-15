@@ -7,6 +7,7 @@ TARGETS[install.apt]=.install.apt
 TARGETS[nanorc]=.nanorc
 TARGETS[redshift.conf]=.config/redshift.conf
 TARGETS[remove.apt]=.remove.apt
+TARGETS[rtorrent.rc]=.rtorrent.rc
 
 for DOTFILE in "${!TARGETS[@]}"; do
     SRC="$HOME/Code/dotfiles/$DOTFILE"
