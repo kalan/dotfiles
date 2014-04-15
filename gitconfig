@@ -35,18 +35,12 @@
 [diff]
   tool = diffmerge
   mnemonicprefix = true
-[difftool "diffmerge"]
-  cmd = /usr/bin/diffmerge $LOCAL $REMOTE
 [merge]
   log = true
-  tool = diffmerge
-[mergetool]
-  keepBackup = false
-[mergetool "diffmerge"]
-  cmd = /usr/bin/diffmerge --merge --result=$MERGED $LOCAL $BASE $REMOTE
-  trustExitCode = true
 [branch]
-	autosetuprebase = always
+  autosetuprebase = always
+[push]
+  default = simple
 
 [alias]
   ci = commit
@@ -57,5 +51,3 @@
   sh = show --stat
   showtrackedignored = ls-files -i --exclude-standard
   st = status -sb
-[push]
-	default = simple
