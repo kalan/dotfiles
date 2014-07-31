@@ -35,6 +35,7 @@
 [diff]
   tool = diffmerge
   mnemonicprefix = true
+	algorithm = patience
 [merge]
   log = true
 [branch]
