@@ -1,0 +1,21 @@
+Host ctn08
+     HostName ctn08.uwaterloo.ca
+     User tbekolay
+     PubkeyAuthentication no
+
+Host ctnsrv
+     HostName ctnsrv.uwaterloo.ca
+     Port 3656
+     User ctnuser
+     PubkeyAuthentication no
+
+Host home
+     HostName 184.175.47.205
+     Port 22222
+     User tbekolay
+     PubkeyAuthentication no
+
+Host compneuro
+     HostName compneuro.uwaterloo.ca
+     User cnrglab
+     PubkeyAuthentication no

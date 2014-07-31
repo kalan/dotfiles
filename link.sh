@@ -10,6 +10,7 @@ TARGETS[redshift.conf]=.config/redshift.conf
 TARGETS[remove.apt]=.remove.apt
 TARGETS[remove.brew]=.remove.brew
 TARGETS[rtorrent.rc]=.rtorrent.rc
+TARGETS[sshconfig]=.ssh/config
 
 checkandlink () {
     SRC=$1
