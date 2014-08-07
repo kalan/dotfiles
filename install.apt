@@ -19,6 +19,7 @@ gnome-terminal
 nautilus-dropbox
 nautilus-open-terminal
 unrar
+xclip
 
 ### Graphics
 eog
@@ -69,4 +70,5 @@ dtach
 rtorrent
 
 ### Video
+libav-tools
 vlc
