@@ -11,6 +11,7 @@ TARGETS[remove.apt]=.remove.apt
 TARGETS[remove.brew]=.remove.brew
 TARGETS[rtorrent.rc]=.rtorrent.rc
 TARGETS[sshconfig]=.ssh/config
+TARGETS[hgrc]=.hgrc
 
 checkandlink () {
     SRC=$1
