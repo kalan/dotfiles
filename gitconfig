@@ -52,3 +52,5 @@
   sh = show --stat
   showtrackedignored = ls-files -i --exclude-standard
   st = status -sb
+[fetch]
+	prune = true
