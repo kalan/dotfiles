@@ -1,9 +1,6 @@
 [user]
   name = Trevor Bekolay
   email = tbekolay@gmail.com
-[github]
-  user = tbekolay
-  token = 589bb6ec6396e25fbf037f8a358699bd
 [color]
   branch = auto
   diff = auto
