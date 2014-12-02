@@ -12,6 +12,7 @@ TARGETS[remove.brew]=.remove.brew
 TARGETS[rtorrent.rc]=.rtorrent.rc
 TARGETS[sshconfig]=.ssh/config
 TARGETS[hgrc]=.hgrc
+TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
 
 checkandlink () {
     SRC=$1
