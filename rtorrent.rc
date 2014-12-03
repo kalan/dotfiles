@@ -23,7 +23,7 @@ directory = /media/Scratch/000Torrent
 # Default session directory. Make sure you don't run multiple instance
 # of rtorrent using the same session directory. Perhaps using a
 # relative path?
-#session = ./session
+session = /home/tbekolay/.rtorrent-session
 
 # Watch a directory for new torrents, and stop those that have been
 # deleted.
