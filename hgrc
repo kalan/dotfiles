@@ -1,2 +1,14 @@
 [ui]
 username = Trevor Bekolay <tbekolay@gmail.com>
+
+[extensions]
+color = 
+pager =
+
+[pager]
+attend = diff,status,log,qdiff,blame,annotate,pdiff,glog,show
+pager = LESS=FRSXQ less
+quiet = True
+
+[alias]
+show = log --patch --verbose --rev
