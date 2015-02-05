@@ -1008,6 +1008,14 @@ See [[file:emacs-javascript.org][emacs-javascript.el]] for details on working wi
 ;;  (load-library "init-javascript")
 #+END_SRC
 
+** YAML
+
+#+BEGIN_SRC elisp
+  (use-package yaml-mode
+      :ensure yaml-mode
+      :config (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode)))
+#+END_SRC
+
 ** HTML, CSS and other Web Programming
 
 See [[file:emacs-web.org][emacs-web.el]] for details on working with HTML and its ilk.
