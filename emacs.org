@@ -278,6 +278,7 @@ And even more packages to look into, or learn better
 
 - =dired-x=
 - =ediff=
+  - Consider =(setq ediff-window-setup-function 'ediff-setup-windows-plain)=
 - =midnight= (especially if I start doing =emacsclient=)
 - =abbrev=
 - =winner-mode=
@@ -395,6 +396,13 @@ with the menu items now, it is just as easy to set them here.
   (use-package volatile-highlights
       :ensure volatile-highlights
       :init (volatile-highlights-mode t))
+
+  ;; Trying show-paren-mode; could be good
+  (show-paren-mode 1)
+
+  ;; More miscellaneous good settings
+  (setq save-interprogram-paste-before-kill t
+        mouse-yank-at-point t)
 #+END_SRC
 
 ** Windowing
@@ -449,7 +457,8 @@ package fixes this.
 #+BEGIN_SRC elisp
   (use-package exec-path-from-shell
       :if (and (eq system-type 'darwin) window-system)
-      :init (exec-path-from-shell-initalize))
+      :ensure exec-path-from-shell
+      :init (exec-path-from-shell-initialize))
 #+END_SRC
 
 Next, if I ever want to use =proced-mode=, we have to do
@@ -548,6 +557,17 @@ Highlight differences between current and committed files in the fringe.
 #+END_SRC
 
 * Key Bindings
+** Searching
+
+It's more likely useful to have regex searches
+than non-regex searches, so let's switch things around.
+
+#+BEGIN_SRC elisp
+  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
+  (global-set-key (kbd "C-r") 'isearch-backward-regexp)
+  (global-set-key (kbd "C-M-s") 'isearch-forward)
+  (global-set-key (kbd "C-M-r") 'isearch-backward)
+#+END_SRC
 
 * Loading and Finding Files
 ** Autorevert
@@ -569,7 +589,7 @@ loses frame focus.
 
 ** Helper functions
 
-These helper functions (originally from Prelude) are rather helpful.
+These helper functions are rather helpful.
 
 #+BEGIN_SRC elisp
   (defun tb/rename-buffer-and-file ()
@@ -754,6 +774,17 @@ I like to see bad whitespace. But not all whitespace.
               (add-hook 'org-mode-hook (whitespace-mode +1))))
 #+END_SRC
 
+Here's a nice helper function to reindent the whole buffer.
+
+#+BEGIN_SRC elisp :tangle no
+  FIX ME!
+  (defun tb/indent-buffer ()
+    "Indent the whole buffer."
+    (interactive)
+    (mark-whole-buffer)
+    (indent-region))
+#+END_SRC
+
 ** Expand-region
 
 This seems pretty useful. I should try to muscle-memory it.
@@ -870,7 +901,6 @@ in shitty webforms.
   (global-set-key (kbd "C-q") 'unfill-paragraph)
 #+END_SRC
 
-
 ** Undo-tree
 
 Unequivocably a better way to do undo.
@@ -917,12 +947,28 @@ ERC seems useful!
       :commands erc)
 #+END_SRC
 
+* Git
+** Magit
+
+I need to learn this better, but now now, we'll start with
+install =magit= so that we can have nice interactive rebase buffers.
+
+#+BEGIN_SRC elisp
+  (use-package magit :ensure magit)
+#+END_SRC
+
 * Org-Mode
 
 See [[file:emacs-org.org][emacs-org-mode.el]] for details on my [[http://www.orgmode][Org-Mode]] settings.
 
 #+BEGIN_SRC elisp :tangle no
   (require 'init-org-mode)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+  (use-package org-bullets
+      :ensure org-bullets
+      :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+END_SRC
 
 * Programming Languages
