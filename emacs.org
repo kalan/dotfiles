@@ -82,7 +82,7 @@ I'll do the same, though this isn't designed to be used by others.
 
   ;;; License:
 
-  ;; Copyright (c) 2014 Trevor Bekolay
+  ;; Copyright (c) 2014-2015 Trevor Bekolay
   ;;
   ;; Permission is hereby granted, free of charge, to any person
   ;; obtaining a copy of this software and associated documentation
@@ -143,7 +143,8 @@ Load up common lisp. I can't say I know exactly what this gives us,
 but it is likely needed by some of the snippets I've copied.
 
 #+BEGIN_SRC elisp
-  (require 'cl)
+  (eval-when-compile
+    (require 'cl))
 #+END_SRC
 
 ** Autotangle
@@ -154,7 +155,7 @@ it's convenient to not have to run that after every change.
 This will tangle and byte-compile whenever we save this file.
 
 #+BEGIN_SRC elisp
-  (defun tb/tangle-init ()
+  (defun tb-tangle-init ()
     "If the current buffer is 'emacs.org' the code-blocks are tangled, and the tangled file is compiled."
     (when (equal (buffer-file-name)
                  (expand-file-name "~/Code/dotfiles/emacs.org"))
@@ -163,7 +164,7 @@ This will tangle and byte-compile whenever we save this file.
         (org-babel-tangle)
         (byte-compile-file (concat user-emacs-directory "init.el")))))
 
-  (add-hook 'after-save-hook 'tb/tangle-init)
+  (add-hook 'after-save-hook 'tb-tangle-init)
 #+END_SRC
 
 * Package Initialization
@@ -175,11 +176,11 @@ so conservative, we need to add more repositories.
 
 #+BEGIN_SRC elisp
   (require 'package)
-  (package-initialize)
   (setq package-enable-at-startup nil)
+  (package-initialize)
   (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
-                           ("gnu"       . "http://elpa.gnu.org/packages/")
                            ("melpa"     . "http://melpa.org/packages/")
+                           ("gnu"       . "http://elpa.gnu.org/packages/")
                            ("marmalade" . "http://marmalade-repo.org/packages/")))
 #+END_SRC
 
@@ -190,7 +191,10 @@ package, so we'll ensure that's installed first.
   (unless (package-installed-p 'use-package)
       (package-refresh-contents)
       (package-install 'use-package))
-  (require 'use-package)
+  (eval-when-compile
+    (require 'use-package))
+  (require 'diminish)
+  (require 'bind-key)
 #+END_SRC
 
 We'll start by updating any already installed packages.
@@ -199,8 +203,8 @@ so we're safe.
 
 #+BEGIN_SRC elisp
   (use-package epl
-      :commands epl-upgrade
-      :ensure epl)
+      :ensure t
+      :commands epl-upgrade)
   (epl-upgrade)
 #+END_SRC
 
@@ -337,7 +341,7 @@ and seems to be quite helpful for many programming languages.
 
 #+BEGIN_SRC elisp
   (use-package aggressive-indent
-      :ensure aggressive-indent
+      :ensure t
       :init
       (progn
         (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
@@ -394,8 +398,8 @@ with the menu items now, it is just as easy to set them here.
 
   ;; Highlight various actions
   (use-package volatile-highlights
-      :ensure volatile-highlights
-      :init (volatile-highlights-mode t))
+      :ensure t
+      :config (volatile-highlights-mode t))
 
   ;; Trying show-paren-mode; could be good
   (show-paren-mode 1)
@@ -416,18 +420,20 @@ TODO these aren't working right now. Keybinding issues with orgmode I think.
 
 #+BEGIN_SRC elisp
   (use-package windmove
+      :disabled t
       :init (windmove-default-keybindings))
 
   (use-package framemove
+      :disabled t
       :ensure framemove
-      :init (progn (windmove-default-keybindings)
-                   (setq framemove-hook-into-windmove t)))
+      :init (setq framemove-hook-into-windmove t)
+      :config (windmove-default-keybindings))
 #+END_SRC
 
 Here's a helper function. Will I use it a lot? TBD!
 
 #+BEGIN_SRC elisp
-  (defun tb/swap-windows ()
+  (defun tb-swap-windows ()
     "If you have 2 windows, it swaps them."
     (interactive)
     (if (/= (count-windows) 2)
@@ -457,8 +463,8 @@ package fixes this.
 #+BEGIN_SRC elisp
   (use-package exec-path-from-shell
       :if (and (eq system-type 'darwin) window-system)
-      :ensure exec-path-from-shell
-      :init (exec-path-from-shell-initialize))
+      :ensure t
+      :config (exec-path-from-shell-initialize))
 #+END_SRC
 
 Next, if I ever want to use =proced-mode=, we have to do
@@ -485,8 +491,10 @@ and super (command). I need this real bad, as I'm really used
 to using the command key for =M-= commands.
 
 #+BEGIN_SRC elisp
+  (defvar mac-command-modifier)  ;; suppress free variable warning on Linux
+  (defvar mac-option-modifier)  ;; suppress free variable warning on Linux
   (when (eq system-type 'darwin)
-    (defun tb/swap-meta-and-super ()
+    (defun tb-swap-meta-and-super ()
       "Swap the mapping of Meta and Super."
       (interactive)
       (if (eq mac-command-modifier 'super)
@@ -497,9 +505,9 @@ to using the command key for =M-= commands.
         (progn
           (setq mac-command-modifier 'super)
           (setq mac-option-modifier 'meta)
-          (message "Command is now bound to SUPER and Option is bound to META."))))
-    ;; I want to do this by default!
-    (tb/swap-meta-and-super))
+          (message "Command is now bound to SUPER and Option is bound to META.")))))
+  ;; I want to do this by default!
+  (when (fboundp 'tb-swap-meta-and-super) (tb-swap-meta-and-super))
 #+END_SRC
 
 ** Debian
@@ -514,12 +522,11 @@ so for the time being I'll defer most of the choices to the
   (column-number-mode t)
 
   (use-package smart-mode-line
-      :ensure smart-mode-line
-      :defer t
-      :pre-load (setq sml/no-confirm-load-theme t)
-      :init (sml/setup)
+      :ensure t
+      :init (setq sml/no-confirm-load-theme t)
       :config
       (progn
+        (sml/setup)
         (sml/apply-theme 'automatic)
         (add-to-list 'sml/replacer-regexp-list '("^~/Code/nengo/" ":Nengo:"))
         (add-to-list 'sml/replacer-regexp-list '("^~/Dropbox/" ":DB:"))
@@ -530,10 +537,10 @@ So here's where I should use =diminish=, or =smart-mode-line='s
 own version, =rich-minority=. I don't know yet though! TODO!
 
 #+BEGIN_SRC elisp :tangle no
-  (use-package diminish :ensure diminish)
+  (use-package diminish :ensure t)
   (use-pacakge rich-minority
-      :ensure rich-minority
-      :init (rich-minority-mode 1))
+      :ensure t
+      :config (rich-minority-mode 1))
 #+END_SRC
 
 I have decided that I'm a fan of the =anzu= package for highlighting
@@ -541,8 +548,8 @@ the number of matches when doing searches.
 
 #+BEGIN_SRC elisp
   (use-package anzu
-      :ensure anzu
-      :init (global-anzu-mode +1))
+      :ensure t
+      :config (global-anzu-mode +1))
 #+END_SRC
 
 ** Fringe
@@ -551,9 +558,9 @@ Highlight differences between current and committed files in the fringe.
 
 #+BEGIN_SRC elisp
   (use-package diff-hl
-      :ensure diff-hl
-      :init (progn (global-diff-hl-mode +1)
-                   (add-hook 'dired-mode-hook 'diff-hl-dired-mode)))
+      :ensure t
+      :config (progn (global-diff-hl-mode +1)
+                     (add-hook 'dired-mode-hook 'diff-hl-dired-mode)))
 #+END_SRC
 
 * Key Bindings
@@ -592,7 +599,7 @@ loses frame focus.
 These helper functions are rather helpful.
 
 #+BEGIN_SRC elisp
-  (defun tb/rename-buffer-and-file ()
+  (defun tb-rename-buffer-and-file ()
     "Rename current buffer and if the buffer is visiting a file, rename it too."
     (interactive)
     (let ((filename (buffer-file-name)))
@@ -605,7 +612,7 @@ These helper functions are rather helpful.
             (rename-file filename new-name t)
             (set-visited-file-name new-name t t)))))))
 
-  (defun tb/delete-file-and-buffer ()
+  (defun tb-delete-file-and-buffer ()
     "Kill the current buffer and deletes the file it is visiting."
     (interactive)
     (let ((filename (buffer-file-name)))
@@ -632,11 +639,9 @@ and shows the details with ')'. I also change the [...] to an asterisk.
 
 #+BEGIN_SRC elisp
   (use-package dired-details
-      :ensure dired-details
-      :init
-      (progn
-        (dired-details-install)
-        (setq dired-details-hidden-string "* ")))
+      :ensure t
+      :init (setq dired-details-hidden-string "* ")
+      :config (dired-details-install))
 #+END_SRC
 
 ** Ibuffer
@@ -654,10 +659,10 @@ So let's use it everywhere!
 
 #+BEGIN_SRC elisp
   (use-package ido
-      :init (ido-mode 1))
+      :config (ido-mode 1))
 
   (use-package ido-ubiquitous
-      :ensure ido-ubiquitous
+      :ensure t
       :init (setq ido-everywhere 1))
 #+END_SRC
 
@@ -665,11 +670,9 @@ Use [[https://github.com/lewang/flx][flex matching]].
 
 #+BEGIN_SRC elisp
   (use-package flx-ido
-      :ensure flx-ido
-      :init
-      (progn
-        (setq ido-enable-flex-matching t)
-        (flx-ido-mode 1)))
+      :ensure t
+      :init (setq ido-enable-flex-matching t)
+      :config (flx-ido-mode 1))
 #+END_SRC
 
 The possible completions are much easier to read vertically.
@@ -677,11 +680,9 @@ For this, I use [[https://github.com/gempesaw/ido-vertical-mode.el][ido-vertical
 
 #+BEGIN_SRC elisp
   (use-package ido-vertical-mode
-      :ensure ido-vertical-mode
-      :init
-      (progn
-        (ido-vertical-mode 1)
-        (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
+      :ensure t
+      :init (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)
+      :config (ido-vertical-mode 1))
 #+END_SRC
 
 ** Smex
@@ -690,7 +691,7 @@ Better =M-x= behavior, using Ido.
 
 #+BEGIN_SRC elisp
   (use-package smex
-      :ensure smex
+      :ensure t
       :bind (("M-x" . smex)
              ("M-z" . smex)  ;; Zap to char sucks
              ("M-X" . smex-major-mode-commands)
@@ -715,8 +716,7 @@ The [[http://www.emacswiki.org/emacs/SavePlace][Save Place]] mode will remember 
 
 #+BEGIN_SRC elisp
   (use-package saveplace
-      :init
-      (setq-default save-place t))
+      :init (setq-default save-place t))
 #+END_SRC
 
 ** Save History
@@ -725,16 +725,11 @@ Saves a few more things.
 
 #+BEGIN_SRC elisp
   (use-package savehist
-      :init
-      (progn
-        (setq savehist-additional-variables
-              ;; search entries
-              '(search-ring regexp-search-ring)
-              ;; save every minute
-              savehist-autosave-interval 60
-              ;; keep the home clean
-              savehist-file (concat user-emacs-directory "savehist"))
-        (savehist-mode +1)))
+      :init (setq savehist-additional-variables
+              '(search-ring regexp-search-ring)  ;; search entries
+              savehist-autosave-interval 60  ;; save every minute
+              savehist-file (concat user-emacs-directory "savehist"))  ;; keep the home clean
+      :config (savehist-mode +1))
 #+END_SRC
 
 * Completion
@@ -746,10 +741,9 @@ instead of the default =ispell=.
 
 #+BEGIN_SRC elisp
   (use-package flyspell
-      :init (progn (setq ispell-program-name "aspell"
-                         ispell-extra-ars '("--sug-mode=ultra"))
-                   (add-hook 'text-mode-hook (flyspell-mode +1))
-                   (add-hook 'org-mode-hook (flyspell-mode +1))))
+      :init (setq ispell-program-name "aspell"
+                  ispell-extra-ars '("--sug-mode=ultra"))
+      :config (flyspell-mode +1))
 #+END_SRC
 
 * Miscellaneous Settings
@@ -767,18 +761,18 @@ I like to see bad whitespace. But not all whitespace.
 
 #+BEGIN_SRC elisp
   (use-package whitespace
-      :init (progn
-              (setq whitespace-line-column 80
-                    whitespace-style '(face tabs empty trailing lines-tail))
-              (add-hook 'text-mode-hook (whitespace-mode +1))
-              (add-hook 'org-mode-hook (whitespace-mode +1))))
+      :init
+      (setq whitespace-line-column 80
+            whitespace-style '(face tabs empty trailing lines-tail))
+      (add-hook 'text-mode-hook (whitespace-mode +1))
+      (add-hook 'org-mode-hook (whitespace-mode +1)))
 #+END_SRC
 
 Here's a nice helper function to reindent the whole buffer.
 
 #+BEGIN_SRC elisp :tangle no
-  FIX ME!
-  (defun tb/indent-buffer ()
+  FIXME!
+  (defun tb-indent-buffer ()
     "Indent the whole buffer."
     (interactive)
     (mark-whole-buffer)
@@ -791,19 +785,9 @@ This seems pretty useful. I should try to muscle-memory it.
 
 #+BEGIN_SRC elisp
   (use-package expand-region
-      :ensure expand-region
+      :ensure t
       :bind (("C-=" . er/expand-region)
              ("C-+" . er/contract-region)))
-#+END_SRC
-
-** Browse kill ring
-
-=C-y M-y M-y ...= sucks. This is better!
-
-#+BEGIN_SRC elisp
-  (use-package browse-kill-ring
-      :ensure browse-kill-ring
-      :init (browse-kill-ring-default-keybindings))
 #+END_SRC
 
 ** Auto-indent yanked text
@@ -864,7 +848,7 @@ Some improvements to compilation. I don't use this yet,
 but perhaps someday I will.
 
 #+BEGIN_SRC elisp
-  (defun tb/colorize-compilation-buffer ()
+  (defun tb-colorize-compilation-buffer ()
     "Colorize a compilation mode buffer."
     (interactive)
     ;; We don't want to mess with child modes such as grep-mode, ack, ag, etc
@@ -881,7 +865,7 @@ but perhaps someday I will.
   ;; Colorize output of Compilation Mode
   (use-package ansi-color
       :init
-      (add-hook 'compilation-filter-hook #'tb/colorize-compilation-buffer))
+      (add-hook 'compilation-filter-hook #'tb-colorize-compilation-buffer))
 #+END_SRC
 
 ** Unfill paragraph
@@ -907,8 +891,8 @@ Unequivocably a better way to do undo.
 
 #+BEGIN_SRC elisp
   (use-package undo-tree
-      :ensure undo-tree
-      :init (global-undo-tree-mode))
+      :ensure t
+      :config (global-undo-tree-mode))
 #+END_SRC
 
 ** Uniquify
@@ -918,13 +902,12 @@ using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Uniquify.html]
 
 #+BEGIN_SRC elisp
   (use-package uniquify
-      :config
-      (progn
-        (setq uniquify-buffer-name-style 'forward)
-        (setq uniquify-separator "/")
-        (setq uniquify-after-kill-buffer-p t)
-        ;; don't muck with special buffers
-        (setq uniquify-ignore-buffers-re "^\\*")))
+      :init
+      (setq uniquify-buffer-name-style 'forward)
+      (setq uniquify-separator "/")
+      (setq uniquify-after-kill-buffer-p t)
+      ;; don't muck with special buffers
+      (setq uniquify-ignore-buffers-re "^\\*"))
 #+END_SRC
 
 ** Flycheck
@@ -933,9 +916,8 @@ using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Uniquify.html]
 
 #+BEGIN_SRC elisp
   (use-package flycheck
-      :ensure flycheck
-      :init
-      (add-hook 'after-init-hook #'global-flycheck-mode))
+      :ensure t
+      :init (add-hook 'after-init-hook #'global-flycheck-mode))
 #+END_SRC
 
 ** IRC
@@ -944,6 +926,7 @@ ERC seems useful!
 
 #+BEGIN_SRC elisp
   (use-package erc
+      :ensure t
       :commands erc)
 #+END_SRC
 
@@ -954,7 +937,9 @@ I need to learn this better, but now now, we'll start with
 install =magit= so that we can have nice interactive rebase buffers.
 
 #+BEGIN_SRC elisp
-  (use-package magit :ensure magit)
+  (use-package magit
+      :ensure t
+      :init (setq magit-last-seen-setup-instructions "1.4.0"))
 #+END_SRC
 
 * Org-Mode
@@ -967,7 +952,7 @@ See [[file:emacs-org.org][emacs-org-mode.el]] for details on my [[http://www.org
 
 #+BEGIN_SRC elisp
   (use-package org-bullets
-      :ensure org-bullets
+      :ensure t
       :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+END_SRC
 
@@ -1011,15 +996,17 @@ Have =flake8= run automatically with Flycheck.
 
 #+BEGIN_SRC elisp
   (use-package python-mode
+      :ensure t
       :init (add-hook 'python-mode-hook 'flycheck-mode))
 #+END_SRC
 
 #+BEGIN_SRC elisp
   (use-package jedi
+      :ensure t
       :commands jedi:setup
-      :ensure jedi
-      :init (progn (add-hook 'python-mode-hook 'jedi:setup)
-                   (setq jedi:complete-on-dot t)))
+      :init
+      (add-hook 'python-mode-hook 'jedi:setup)
+      (setq jedi:complete-on-dot t))
 #+END_SRC
 
 The IPython notebook is quite useful, but so is Emacs.
@@ -1030,9 +1017,9 @@ so we'll use the =virtualenvwrapper= clone for Emacs.
 
 #+BEGIN_SRC elisp
   (use-package virtualenvwrapper
-      :ensure virtualenvwrapper
-      :idle (progn (venv-initialize-interactive-shells)
-                   (setq venv-location "~/.virtualenvs")))
+      :ensure t
+      :init (setq venv-location "~/.virtualenvs")
+      :config (venv-initialize-interactive-shells))
 #+END_SRC
 
 Now we'll install =ein= to actually edit notebooks in Emacs.
@@ -1041,9 +1028,9 @@ Actually not right now. There are issues.
 
 #+BEGIN_SRC elisp :tangle no
   (use-package ein
-      :ensure ein
+      :ensure t
       :commands (ein:notebooklist-open ein:jedi-setup)
-      :config (add-hook 'ein:connect-mode-hook 'ein:jedi-setup))
+      :init (add-hook 'ein:connect-mode-hook 'ein:jedi-setup))
 #+END_SRC
 
 ** JavaScript
@@ -1058,8 +1045,8 @@ See [[file:emacs-javascript.org][emacs-javascript.el]] for details on working wi
 
 #+BEGIN_SRC elisp
   (use-package yaml-mode
-      :ensure yaml-mode
-      :config (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode)))
+      :ensure t
+      :mode ("\\.yml$" "\\.yaml$"))
 #+END_SRC
 
 ** HTML, CSS and other Web Programming
