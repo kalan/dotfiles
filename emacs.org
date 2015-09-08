@@ -511,6 +511,15 @@ to using the command key for =M-= commands.
 #+END_SRC
 
 ** Debian
+Using XFCE, Emacs opens Iceweasel even though I prefer Chrome.
+This makes it use the =exo-open= command,
+which uses the configured preferred browser.
+
+#+BEGIN_SRC elisp
+  (when (eq system-type 'gnu/linux)
+    (setq browse-url-browser-function 'browse-url-generic
+          browse-url-generic-program "exo-open"))
+#+END_SRC
 
 ** Mode Line
 
