@@ -1046,7 +1046,7 @@ See [[file:emacs-javascript.org][emacs-javascript.el]] for details on working wi
 #+BEGIN_SRC elisp
   (use-package yaml-mode
       :ensure t
-      :mode ("\\.yml$" "\\.yaml$"))
+      :mode (("\\.yml$" . yaml-mode) ("\\.yaml$" . yaml-mode)))
 #+END_SRC
 
 ** HTML, CSS and other Web Programming
