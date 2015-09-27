@@ -195,6 +195,7 @@ package, so we'll ensure that's installed first.
     (require 'use-package))
   (require 'diminish)
   (require 'bind-key)
+  (setq use-package-always-ensure t)
 #+END_SRC
 
 We'll start by updating any already installed packages.
@@ -203,7 +204,6 @@ so we're safe.
 
 #+BEGIN_SRC elisp
   (use-package epl
-      :ensure t
       :commands epl-upgrade)
   (epl-upgrade)
 #+END_SRC
@@ -341,11 +341,8 @@ and seems to be quite helpful for many programming languages.
 
 #+BEGIN_SRC elisp
   (use-package aggressive-indent
-      :ensure t
-      :init
-      (progn
-        (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-        (add-hook 'css-mode-hook #'aggressive-indent-mode)))
+      :init (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+            (add-hook 'css-mode-hook #'aggressive-indent-mode))
 #+END_SRC
 
 * User Interface (UI)
@@ -398,7 +395,6 @@ with the menu items now, it is just as easy to set them here.
 
   ;; Highlight various actions
   (use-package volatile-highlights
-      :ensure t
       :config (volatile-highlights-mode t))
 
   ;; Trying show-paren-mode; could be good
@@ -425,7 +421,6 @@ TODO these aren't working right now. Keybinding issues with orgmode I think.
 
   (use-package framemove
       :disabled t
-      :ensure framemove
       :init (setq framemove-hook-into-windmove t)
       :config (windmove-default-keybindings))
 #+END_SRC
@@ -463,7 +458,6 @@ package fixes this.
 #+BEGIN_SRC elisp
   (use-package exec-path-from-shell
       :if (and (eq system-type 'darwin) window-system)
-      :ensure t
       :config (exec-path-from-shell-initialize))
 #+END_SRC
 
@@ -531,24 +525,21 @@ so for the time being I'll defer most of the choices to the
   (column-number-mode t)
 
   (use-package smart-mode-line
-      :ensure t
       :init (setq sml/no-confirm-load-theme t)
       :config
-      (progn
-        (sml/setup)
-        (sml/apply-theme 'automatic)
-        (add-to-list 'sml/replacer-regexp-list '("^~/Code/nengo/" ":Nengo:"))
-        (add-to-list 'sml/replacer-regexp-list '("^~/Dropbox/" ":DB:"))
-        (add-to-list 'sml/replacer-regexp-list '("^~/Code/" ":C:"))))
+      (sml/setup)
+      (sml/apply-theme 'automatic)
+      (add-to-list 'sml/replacer-regexp-list '("^~/Code/nengo/" ":Nengo:"))
+      (add-to-list 'sml/replacer-regexp-list '("^~/Dropbox/" ":DB:"))
+      (add-to-list 'sml/replacer-regexp-list '("^~/Code/" ":C:")))
 #+END_SRC
 
 So here's where I should use =diminish=, or =smart-mode-line='s
 own version, =rich-minority=. I don't know yet though! TODO!
 
 #+BEGIN_SRC elisp :tangle no
-  (use-package diminish :ensure t)
+  (use-package diminish)
   (use-pacakge rich-minority
-      :ensure t
       :config (rich-minority-mode 1))
 #+END_SRC
 
@@ -557,7 +548,6 @@ the number of matches when doing searches.
 
 #+BEGIN_SRC elisp
   (use-package anzu
-      :ensure t
       :config (global-anzu-mode +1))
 #+END_SRC
 
@@ -567,9 +557,8 @@ Highlight differences between current and committed files in the fringe.
 
 #+BEGIN_SRC elisp
   (use-package diff-hl
-      :ensure t
-      :config (progn (global-diff-hl-mode +1)
-                     (add-hook 'dired-mode-hook 'diff-hl-dired-mode)))
+      :config (global-diff-hl-mode +1)
+              (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 #+END_SRC
 
 * Key Bindings
@@ -648,7 +637,6 @@ and shows the details with ')'. I also change the [...] to an asterisk.
 
 #+BEGIN_SRC elisp
   (use-package dired-details
-      :ensure t
       :init (setq dired-details-hidden-string "* ")
       :config (dired-details-install))
 #+END_SRC
@@ -671,7 +659,6 @@ So let's use it everywhere!
       :config (ido-mode 1))
 
   (use-package ido-ubiquitous
-      :ensure t
       :init (setq ido-everywhere 1))
 #+END_SRC
 
@@ -679,7 +666,6 @@ Use [[https://github.com/lewang/flx][flex matching]].
 
 #+BEGIN_SRC elisp
   (use-package flx-ido
-      :ensure t
       :init (setq ido-enable-flex-matching t)
       :config (flx-ido-mode 1))
 #+END_SRC
@@ -689,7 +675,6 @@ For this, I use [[https://github.com/gempesaw/ido-vertical-mode.el][ido-vertical
 
 #+BEGIN_SRC elisp
   (use-package ido-vertical-mode
-      :ensure t
       :init (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)
       :config (ido-vertical-mode 1))
 #+END_SRC
@@ -700,7 +685,6 @@ Better =M-x= behavior, using Ido.
 
 #+BEGIN_SRC elisp
   (use-package smex
-      :ensure t
       :bind (("M-x" . smex)
              ("M-z" . smex)  ;; Zap to char sucks
              ("M-X" . smex-major-mode-commands)
@@ -750,9 +734,12 @@ instead of the default =ispell=.
 
 #+BEGIN_SRC elisp
   (use-package flyspell
-      :init (setq ispell-program-name "aspell"
-                  ispell-extra-ars '("--sug-mode=ultra"))
-      :config (flyspell-mode +1))
+      :init
+      (setq-default ispell-program-name "hunspell")
+      (setq ispell-really-hunspell t)
+      (setq flyspell-issue-message-flag nil)
+      (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
+      (add-hook 'python-mode-hook (flyspell-prog-mode)))
 #+END_SRC
 
 * Miscellaneous Settings
@@ -794,7 +781,6 @@ This seems pretty useful. I should try to muscle-memory it.
 
 #+BEGIN_SRC elisp
   (use-package expand-region
-      :ensure t
       :bind (("C-=" . er/expand-region)
              ("C-+" . er/contract-region)))
 #+END_SRC
@@ -900,7 +886,6 @@ Unequivocably a better way to do undo.
 
 #+BEGIN_SRC elisp
   (use-package undo-tree
-      :ensure t
       :config (global-undo-tree-mode))
 #+END_SRC
 
@@ -911,6 +896,7 @@ using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Uniquify.html]
 
 #+BEGIN_SRC elisp
   (use-package uniquify
+      :ensure f
       :init
       (setq uniquify-buffer-name-style 'forward)
       (setq uniquify-separator "/")
@@ -925,7 +911,6 @@ using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Uniquify.html]
 
 #+BEGIN_SRC elisp
   (use-package flycheck
-      :ensure t
       :init (add-hook 'after-init-hook #'global-flycheck-mode))
 #+END_SRC
 
@@ -935,7 +920,6 @@ ERC seems useful!
 
 #+BEGIN_SRC elisp
   (use-package erc
-      :ensure t
       :commands erc)
 #+END_SRC
 
@@ -947,7 +931,6 @@ install =magit= so that we can have nice interactive rebase buffers.
 
 #+BEGIN_SRC elisp
   (use-package magit
-      :ensure t
       :init (setq magit-last-seen-setup-instructions "1.4.0"))
 #+END_SRC
 
@@ -961,8 +944,18 @@ See [[file:emacs-org.org][emacs-org-mode.el]] for details on my [[http://www.org
 
 #+BEGIN_SRC elisp
   (use-package org-bullets
-      :ensure t
       :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+
+* LaTeX
+Make AUCTex aware of style files and multi-file documents.
+
+#+BEGIN_SRC elisp
+  (use-package auctex
+      :init (setq TeX-auto-save t)
+            (setq TeX-parse-self t)
+            (setq-default TeX-master nil)
+      :mode (("\\.tex$" . LaTeX-mode)))
 #+END_SRC
 
 * Programming Languages
@@ -1005,13 +998,11 @@ Have =flake8= run automatically with Flycheck.
 
 #+BEGIN_SRC elisp
   (use-package python-mode
-      :ensure t
       :init (add-hook 'python-mode-hook 'flycheck-mode))
 #+END_SRC
 
 #+BEGIN_SRC elisp
   (use-package jedi
-      :ensure t
       :commands jedi:setup
       :init
       (add-hook 'python-mode-hook 'jedi:setup)
@@ -1026,7 +1017,6 @@ so we'll use the =virtualenvwrapper= clone for Emacs.
 
 #+BEGIN_SRC elisp
   (use-package virtualenvwrapper
-      :ensure t
       :init (setq venv-location "~/.virtualenvs")
       :config (venv-initialize-interactive-shells))
 #+END_SRC
@@ -1037,9 +1027,16 @@ Actually not right now. There are issues.
 
 #+BEGIN_SRC elisp :tangle no
   (use-package ein
-      :ensure t
       :commands (ein:notebooklist-open ein:jedi-setup)
       :init (add-hook 'ein:connect-mode-hook 'ein:jedi-setup))
+#+END_SRC
+** Matlab
+Gross. But we look at it every now and then.
+
+#+BEGIN_SRC elisp
+ (use-package octave-mode
+     :ensure f
+      :mode ("\\.m$" . octave-mode))
 #+END_SRC
 
 ** JavaScript
@@ -1054,7 +1051,6 @@ See [[file:emacs-javascript.org][emacs-javascript.el]] for details on working wi
 
 #+BEGIN_SRC elisp
   (use-package yaml-mode
-      :ensure t
       :mode (("\\.yml$" . yaml-mode) ("\\.yaml$" . yaml-mode)))
 #+END_SRC
 
