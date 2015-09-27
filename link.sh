@@ -13,6 +13,7 @@ TARGETS[rtorrent.rc]=.rtorrent.rc
 TARGETS[sshconfig]=.ssh/config
 TARGETS[hgrc]=.hgrc
 TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
+TARGETS[jupyter.js]=.jupyter/custom/custom.js
 
 checkandlink () {
     SRC=$1
