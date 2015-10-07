@@ -14,6 +14,7 @@ TARGETS[sshconfig]=.ssh/config
 TARGETS[hgrc]=.hgrc
 TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
 TARGETS[jupyter.js]=.jupyter/custom/custom.js
+TARGETS[refsrc]=.config/refs/refsrc
 
 checkandlink () {
     SRC=$1
