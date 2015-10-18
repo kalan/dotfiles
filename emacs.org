@@ -367,6 +367,7 @@ with the menu items now, it is just as easy to set them here.
 
   ;; Highlight the current line
   (global-hl-line-mode +1)
+  (set-face-background hl-line-face "azure2")
 
   ;; Nice scrolling
   (setq scroll-margin 10
