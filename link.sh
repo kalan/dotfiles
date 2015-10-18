@@ -16,6 +16,8 @@ TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
 TARGETS[jupyter.js]=.jupyter/custom/custom.js
 TARGETS[refsrc]=.config/refs/refsrc
 TARGETS[hockey.lua]=.local/share/vlc/lua/sd/hockey.lua
+TARGETS[emacs.service]=.config/systemd/user/emacs.service
+TARGETS[emacsclient.desktop]=.local/share/applications/emacsclient.desktop
 
 checkandlink () {
     SRC=$1
@@ -30,7 +32,12 @@ checkandlink () {
     if [[ ! -h $DST || `readlink $DST` != $SRC ]]; then
         echo "--- Linking $DST to $SRC"
         rm -rf "$DST"
-        ln -s "$SRC" "$DST"
+        if [[ $SRC == *".service" ]]; then
+            # Special case due to systemd not allowing services to be symlinks
+            ln "$SRC" "$DST"
+        else
+            ln -s "$SRC" "$DST"
+        fi
     fi
 }
 
