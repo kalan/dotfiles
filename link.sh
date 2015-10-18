@@ -15,10 +15,18 @@ TARGETS[hgrc]=.hgrc
 TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
 TARGETS[jupyter.js]=.jupyter/custom/custom.js
 TARGETS[refsrc]=.config/refs/refsrc
+TARGETS[hockey.lua]=.local/share/vlc/lua/sd/hockey.lua
 
 checkandlink () {
     SRC=$1
     DST=$2
+    DIR=$(dirname $DST)
+
+    if [ ! -d $DIR ]; then
+        echo "--- Making directory '$DIR'"
+        mkdir -p "$DIR"
+    fi
+
     if [[ ! -h $DST || `readlink $DST` != $SRC ]]; then
         echo "--- Linking $DST to $SRC"
         rm -rf "$DST"
