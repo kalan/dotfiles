@@ -16,6 +16,7 @@ TARGETS[i3.config]=.config/i3/config
 TARGETS[sshconfig]=.ssh/config
 TARGETS[hgrc]=.hgrc
 TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
+TARGETS[Xresources]=.Xresources
 TARGETS[jupyter.js]=.jupyter/custom/custom.js
 TARGETS[jupyter_notebook_config.py]=.jupyter/jupyter_notebook_config.py
 TARGETS[refsrc]=.config/refs/refsrc
