@@ -369,6 +369,9 @@ with the menu items now, it is just as easy to set them here.
   (global-hl-line-mode +1)
   (set-face-background hl-line-face "azure2")
 
+  ;; Use small-ish font
+  (set-face-attribute 'default nil :height 94)
+
   ;; Nice scrolling
   (setq scroll-margin 10
         scroll-conservatively 100000
@@ -380,20 +383,21 @@ with the menu items now, it is just as easy to set them here.
 
   ;; Toolbars are not necessary
   (when (window-system)
-    (tool-bar-mode 0)
+    (tool-bar-mode -1)
     (menu-bar-mode 1)
+    (toggle-scroll-bar -1)
     (when (fboundp 'horizontal-scroll-bar-mode)
       (horizontal-scroll-bar-mode -1)))
 
   ;; Have to set some these whenever client window opened
-  (if (daemonp)
-    (add-hook 'after-make-frame-functions
-      (lambda (frame)
-        (with-selected-frame frame
-          (tool-bar-mode 0)
-          (menu-bar-mode 1)
-          (when (fboundp 'horizontal-scroll-bar-mode)
-          (horizontal-scroll-bar-mode -1))))))
+  (add-hook 'after-make-frame-functions
+    (lambda (frame)
+      (with-selected-frame frame
+        (tool-bar-mode -0)
+        (menu-bar-mode 1)
+        (toggle-scroll-bar -1)
+        (when (fboundp 'horizontal-scroll-bar-mode)
+          (horizontal-scroll-bar-mode -1)))))
 
   ;; Enable y/n answers
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -577,7 +581,8 @@ There's a new folding implementation on the block:
 [[https://github.com/mrkkrp/vimish-fold][=vimish-fold=]].
 We'll try it out.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
+  ;; Not useful to me at the moment...
   (use-package vimish-fold
       :demand
       :config (vimish-fold-global-mode 1)
