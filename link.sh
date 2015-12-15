@@ -21,10 +21,16 @@ TARGETS[Xresources]=.Xresources
 TARGETS[jupyter.js]=.jupyter/custom/custom.js
 TARGETS[jupyter_notebook_config.py]=.jupyter/jupyter_notebook_config.py
 TARGETS[refsrc]=.config/refs/refsrc
-TARGETS[hockey.lua]=.local/share/vlc/lua/sd/hockey.lua
-TARGETS[emacs.service]=.config/systemd/user/emacs.service
-TARGETS[emacsclient.desktop]=.local/share/applications/emacsclient.desktop
 TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
+# --- Mac OS X specific
+if [[ $(uname) == 'Darwin' ]]; then
+    TARGETS[hockey.lua]=/Applications/VLC.app/Contents/MacOS/share/lua/sd/hockey.lua
+elif [[ $(uname) == 'Linux' ]]; then
+# --- Debian specific
+    TARGETS[hockey.lua]=.local/share/vlc/lua/sd/hockey.lua
+    TARGETS[emacs.service]=.config/systemd/user/emacs.service
+    TARGETS[emacsclient.desktop]=.local/share/applications/emacsclient.desktop
+fi
 
 checkandlink () {
     SRC=$1
@@ -50,6 +56,10 @@ checkandlink () {
 
 for DOTFILE in "${!TARGETS[@]}"; do
     SRC="$HOME/Code/dotfiles/$DOTFILE"
-    DST="$HOME/${TARGETS[$DOTFILE]}"
+    if [[ ${TARGETS[$DOTFILE]:0:1} == '/' ]]; then
+        DST=${TARGETS[$DOTFILE]}
+    else
+        DST="$HOME/${TARGETS[$DOTFILE]}"
+    fi
     checkandlink "$SRC" "$DST"
 done
