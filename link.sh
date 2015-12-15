@@ -13,6 +13,7 @@ TARGETS[rtorrent.rc]=.rtorrent.rc
 TARGETS[theanorc]=.theanorc
 TARGETS[octaverc]=.octaverc
 TARGETS[i3.config]=.config/i3/config
+TARGETS[i3status.conf]=.i3status.conf
 TARGETS[sshconfig]=.ssh/config
 TARGETS[hgrc]=.hgrc
 TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
