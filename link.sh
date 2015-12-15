@@ -23,6 +23,7 @@ TARGETS[refsrc]=.config/refs/refsrc
 TARGETS[hockey.lua]=.local/share/vlc/lua/sd/hockey.lua
 TARGETS[emacs.service]=.config/systemd/user/emacs.service
 TARGETS[emacsclient.desktop]=.local/share/applications/emacsclient.desktop
+TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
 
 checkandlink () {
     SRC=$1
